@@ -6,5 +6,5 @@ export default defineConfig({
   },
   routes: [{ path: '/', component: '@/pages/Home' }],
   fastRefresh: {},
-  title: 'iPay',
+  title: 'Base Tech',
 });

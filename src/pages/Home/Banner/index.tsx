@@ -731,22 +731,26 @@ const Banner = () => {
         <div className="template color-yellow" data-template="home">
           <main>
             <h1>
-              <mark>1/100 </mark>fees of Ethereum
-              <br /> on zkRollup Layer 2 network.{' '}
+              {/* <mark>1/100 </mark>fees of Ethereum */}
+              {/* <br />  */}
+              Start your wallet to wallet chat
+              <br />
+              Create your DAO communities.
             </h1>
-            <div className="p">
-              Buy, trade, earn and stake, safeguarded by Bulletproof
+            <div className="p" hidden>
+              {/* Buy, trade, earn and stake, safeguarded by Bulletproof */}
+              Create your DAO communities.
             </div>
             <div className="links">
               <a
                 className="link color-yellow"
-                href="https://beta.yahiarefaiea.com/#bucket"
+                href="#"
                 title="View my bucket list"
                 target="_blank"
               >
-                View my bucket list
+                Download App
               </a>
-              <a
+              {/* <a
                 className="link color-green"
                 href="https://beta.yahiarefaiea.com/#secret"
                 title="Tell me a secret"
@@ -761,7 +765,7 @@ const Banner = () => {
                 target="_blank"
               >
                 Download my résumé
-              </a>
+              </a> */}
             </div>
             <Phone />
           </main>
@@ -802,7 +806,12 @@ const Banner = () => {
             </div>
           </footer>
         </div>
-        <div className="loading" id="identity" title="Yahia Refaiea identity">
+        <div
+          hidden
+          className="loading"
+          id="identity"
+          title="Yahia Refaiea identity"
+        >
           <div></div>
           <div></div>
           <div></div>
