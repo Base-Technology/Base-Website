@@ -746,7 +746,6 @@ const Banner = () => {
                 className="link color-yellow"
                 href="#"
                 title="View my bucket list"
-                target="_blank"
               >
                 Download App
               </a>
@@ -771,36 +770,16 @@ const Banner = () => {
           </main>
           <footer>
             <div className="links">
-              <a
-                className="link small alt"
-                href="http://facebook.com/YahiaRefaiea"
-                title="Facebook (@YahiaRefaiea)"
-                target="_blank"
-              >
-                Facebook
+              <a className="link small alt" href="#" title="Telegram">
+                Telegram
               </a>
-              <a
-                className="link small alt"
-                href="http://twitter.com/YahiaRefaiea"
-                title="Twitter (@YahiaRefaiea)"
-                target="_blank"
-              >
+              <a className="link small alt" href="#" title="Twitter">
                 Twitter
               </a>
-              <a
-                className="link small alt"
-                href="http://codepen.io/YahiaRefaiea"
-                title="Codepen (@YahiaRefaiea)"
-                target="_blank"
-              >
-                Codepen
+              <a className="link small alt" href="#" title="Mirror">
+                Mirror
               </a>
-              <a
-                className="link small alt"
-                href="http://github.com/YahiaRefaiea"
-                title="GitHub (@YahiaRefaiea)"
-                target="_blank"
-              >
+              <a className="link small alt" href="#" title="GitHub">
                 GitHub
               </a>
             </div>
