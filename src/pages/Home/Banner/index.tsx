@@ -144,10 +144,10 @@ const Banner = () => {
             $(Identity.selector).attr(
               'style',
               'animation-iteration-count: ' +
-                Identity.iteration +
-                '; -webkit-animation-iteration-count: ' +
-                Identity.iteration +
-                ';',
+              Identity.iteration +
+              '; -webkit-animation-iteration-count: ' +
+              Identity.iteration +
+              ';',
             );
           }
         }, Identity.delay);
@@ -728,6 +728,18 @@ const Banner = () => {
       <canvas style={{ width: 0 }} id="yahia"></canvas>
       <div className="container">
         <LogoSVG style={{ width: '150px', margin: '50px 0 0 50px' }} />
+        <div style={{
+          zIndex: 1,
+          position: 'fixed',
+          right: '50px',
+          top: '50px',
+          borderRadius: '5px',
+          overflow: 'hidden'
+        }}>
+          <a target='_blank' href="https://app.base.tech/"> <button className="btn btn-2 hover-slide-down">
+            <span>Launch App</span>
+          </button></a>
+        </div>
         <div className="template color-yellow" data-template="home">
           <main>
             <h1>
