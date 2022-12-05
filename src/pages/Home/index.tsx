@@ -35,7 +35,7 @@ export default function IndexPage() {
       <div className='flex bg1'>
         <FloatDiv>
           <div className='item'>
-            <img src={Wallet} />
+            <img src={Chat} />
             <div className={styles.text}>
               <h1>Create a smart group to generate a DAO</h1>
               <p>The users as DAO members can interoperate with the smart group by their own wallets.</p>
