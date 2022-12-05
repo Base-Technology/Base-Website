@@ -1,6 +1,6 @@
 import Wallet from "@/assets/wallet.png";
 import Chat from "@/assets/chat.png";
-import Dis from "@/assets/dis.png";
+import Dis from "@/assets/dis.jpg";
 import { ReactComponent as LogoSVG } from '/public/logo.svg';
 
 import FloatDiv from "./abc";
