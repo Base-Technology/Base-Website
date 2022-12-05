@@ -1,5 +1,6 @@
 import Wallet from "@/assets/wallet.png";
 import Chat from "@/assets/chat.png";
+import Chat2 from "@/assets/chat2.png";
 import Dis from "@/assets/dis.jpg";
 import { ReactComponent as LogoSVG } from '/public/logo.svg';
 
@@ -35,7 +36,7 @@ export default function IndexPage() {
       <div className='flex bg1'>
         <FloatDiv>
           <div className='item'>
-            <img src={Chat} />
+            <img src={Chat2} />
             <div className={styles.text}>
               <h1>Create a smart group to generate a DAO</h1>
               <p>The users as DAO members can interoperate with the smart group by their own wallets.</p>
