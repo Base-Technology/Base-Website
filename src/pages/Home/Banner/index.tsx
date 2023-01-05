@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react';
-import { ReactComponent as LogoSVG } from '/public/logo.svg';
+import LogoSVG from '/public/logo.svg';
 import { ReactComponent as Download } from '@/assets/download.svg';
 import styles from './index.less';
 
@@ -505,7 +505,7 @@ const Banner = () => {
       <canvas id="stars"></canvas>
       <div className={styles.content}>
         <div className={styles.header}>
-          <LogoSVG />
+          <img width={150} src={LogoSVG}/>
           <a target='_blank' href="https://app.base.tech/" className="buttonSmall">
               Launch App
           </a>
