@@ -137,25 +137,16 @@ const Banner = () => {
       },
     };
     Stars.init();
-    'use strict';
+    ('use strict');
 
-    let scene,
-      camera,
-      renderer,
-      raycaster,
-      controls,
-      mouse;
+    let scene, camera, renderer, raycaster, controls, mouse;
 
-    let chameleon,
-      branch,
-      fly;
+    let chameleon, branch, fly;
 
-    let width,
-      height;
+    let width, height;
 
     function init() {
-      width = 600,
-        height = 600;
+      (width = 600), (height = 600);
 
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
@@ -210,7 +201,7 @@ const Banner = () => {
     }
 
     function drawBranch() {
-      branch = drawCylinder(0x17B26F, 0.76, 1.12, 2.14, 5);
+      branch = drawCylinder(0x17b26f, 0.76, 1.12, 2.14, 5);
       branch.position.set(-2.76, -5.67, -7.86);
       branch.rotation.set(rad(85.18), rad(4.14), rad(-20.4));
       branch.scale.set(3.78, 11.92, 2.72);
@@ -234,13 +225,13 @@ const Banner = () => {
 
     function onMouseMove(event) {
       mouse.x = (event.clientX / width) * 2 - 1;
-      mouse.y = - (event.clientY / height) * 2 + 1;
+      mouse.y = -(event.clientY / height) * 2 + 1;
     }
 
     function onTouchMove(event) {
       event.preventDefault();
       mouse.x = (event.touches[0].pageX / width) * 2 - 1;
-      mouse.y = - (event.touches[0].pageY / height) * 2 + 1;
+      mouse.y = -(event.touches[0].pageY / height) * 2 + 1;
     }
 
     function rad(degrees) {
@@ -248,7 +239,12 @@ const Banner = () => {
     }
 
     function drawCylinder(materialColor, rTop, rBottom, height, radialSeg) {
-      const geometry = new THREE.CylinderGeometry(rTop, rBottom, height, radialSeg);
+      const geometry = new THREE.CylinderGeometry(
+        rTop,
+        rBottom,
+        height,
+        radialSeg,
+      );
       const material = new THREE.MeshStandardMaterial({
         color: materialColor,
         roughness: 1,
@@ -265,7 +261,6 @@ const Banner = () => {
     }
 
     function render() {
-
       chameleon.changeColor();
       chameleon.moveHead(fly.group.position);
 
@@ -282,7 +277,7 @@ const Banner = () => {
         this.group.rotation.set(rad(18.84), 0, rad(2.2));
 
         this.material = new THREE.MeshStandardMaterial({
-          color: 0x1CCCA3,
+          color: 0x1ccca3,
           roughness: 1,
           shading: THREE.FlatShading,
         });
@@ -315,7 +310,7 @@ const Banner = () => {
         rightEyeWhite.position.set(0.02, -0.37, -0.06);
         rightEye.add(rightEyeWhite);
 
-        const rightEyeBlack = drawCylinder(0x3F3F3F, 0.86, 0.36, 1.14, 5);
+        const rightEyeBlack = drawCylinder(0x3f3f3f, 0.86, 0.36, 1.14, 5);
         rightEyeBlack.position.set(-0.01, -0.27, -0.01);
         rightEyeWhite.add(rightEyeBlack);
 
@@ -426,11 +421,17 @@ const Banner = () => {
 
       changeColor() {
         raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(this.group.children, true);
+        const intersects = raycaster.intersectObjects(
+          this.group.children,
+          true,
+        );
 
         if (intersects.length > 0) {
-          if (intersects[0].object.material.color.getHexString() === 'ffffff' ||
-            intersects[0].object.material.color.getHexString() === '3f3f3f') return;
+          if (
+            intersects[0].object.material.color.getHexString() === 'ffffff' ||
+            intersects[0].object.material.color.getHexString() === '3f3f3f'
+          )
+            return;
 
           const time = Date.now() * 0.00005;
           const h = ((360 * (1.0 + time)) % 360) / 360;
@@ -445,7 +446,12 @@ const Banner = () => {
       }
 
       drawSkinCylinder(rTop, rBottom, height, radialSeg) {
-        const geometry = new THREE.CylinderGeometry(rTop, rBottom, height, radialSeg);
+        const geometry = new THREE.CylinderGeometry(
+          rTop,
+          rBottom,
+          height,
+          radialSeg,
+        );
         const mesh = new THREE.Mesh(geometry, this.material);
         return mesh;
       }
@@ -464,7 +470,7 @@ const Banner = () => {
       drawBody() {
         const flyGeometry = new THREE.BoxGeometry(1, 1, 1);
         const flyMaterial = new THREE.MeshStandardMaterial({
-          color: 0x3F3F3F,
+          color: 0x3f3f3f,
           roughness: 1,
           shading: THREE.FlatShading,
         });
@@ -475,7 +481,9 @@ const Banner = () => {
         this.rightWing = drawCylinder(0xffffff, 0.42, 0.08, 1.26, 4);
         this.rightWing.position.set(0, 0.2, 0.6);
         this.rightWing.rotation.set(Math.PI / 4, 0, Math.PI / 4);
-        this.rightWing.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0.21, 0.04));
+        this.rightWing.geometry.applyMatrix(
+          new THREE.Matrix4().makeTranslation(0, 0.21, 0.04),
+        );
         this.group.add(this.rightWing);
 
         this.leftWing = this.rightWing.clone();
@@ -491,8 +499,10 @@ const Banner = () => {
       moveWings() {
         this.wingAngle += 0.5;
         const wingAmplitude = Math.PI / 8;
-        this.rightWing.rotation.x = (Math.PI / 4) - (Math.cos(this.wingAngle) * wingAmplitude);
-        this.leftWing.rotation.x = (-Math.PI / 4) + (Math.cos(this.wingAngle) * wingAmplitude);
+        this.rightWing.rotation.x =
+          Math.PI / 4 - Math.cos(this.wingAngle) * wingAmplitude;
+        this.leftWing.rotation.x =
+          -Math.PI / 4 + Math.cos(this.wingAngle) * wingAmplitude;
       }
     }
 
@@ -505,25 +515,35 @@ const Banner = () => {
       <canvas id="stars"></canvas>
       <div className={styles.content}>
         <div className={styles.header}>
-          <img width={150} src={LogoSVG}/>
-          <a target='_blank' href="https://app.base.tech/" className="buttonSmall">
-              Launch App
+          <img width={150} src={LogoSVG} />
+          <a
+            target="_blank"
+            href="https://app.base.tech/"
+            className="buttonSmall"
+          >
+            进入PC版
           </a>
         </div>
         <div className={styles.slo}>
-          <h1>A Decentralized Chatting Place</h1>
-          <p>Start your wallet-to-wallet chat and create your first smart group</p>
+          <h1>遇见 · 新生活</h1>
+          <p>ChatGPT与Web3的一场邂逅</p>
           <p>
-          <a target='_blank' href="https://app.base.tech/" className="buttonBig" style={{marginRight:'15px'}}>
-          <Download />Google Play
-          </a>
-          <a target='_blank' href="https://app.base.tech/" className="buttonBig">
+            <a
+              target="_blank"
+              href="/base1.0.apk"
+              className="buttonBig"
+              style={{ marginRight: '15px' }}
+            >
+              <Download />
+              APP下载
+            </a>
+            {/* <a target='_blank' href="https://app.base.tech/" className="buttonBig">
           <Download />Apple Store
-          </a>
+          </a> */}
           </p>
         </div>
       </div>
-      <div className={styles.world} id='world'></div>
+      <div className={styles.world} id="world"></div>
     </div>
   );
 };
