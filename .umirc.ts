@@ -2,7 +2,7 @@ export default {
   npmClient: "yarn",
   fastRefresh: true,
   favicons: ['/icon.svg'],
-  title:'Base 遇见·新生活',
+  title:'Base 百思·得其解',
   dva: {},
   plugins: ["@umijs/plugins/dist/dva",
     "@umijs/plugins/dist/locale",
