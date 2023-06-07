@@ -11,13 +11,13 @@ export default function MessageItem(props) {
 
   // },)
   return (
-    <div style={{marginBottom:'10px'}}>
+    <div style={{marginBottom:'10px'}} className={`${self&&'base-hr'||''}`}>
       <div className={`msg_flex ${!self&&'msg-justify-end'}  msg-ml-10`}>
         <div className='msg_flex msg-flex-col' style={{paddingRight:'20px'}}>
-            <div className={`msg_flex msg-flex-col msg-justify-end msg_items_center msg-border ${!self&&'msg_bg_subtle_night'}`}>
+            <div className={`msg_flex msg-flex-col msg-justify-end msg_items_center msg-border ${self&&'msg_bg_subtle_night'||'msg_bg_subtle_light'}`}>
               <div className='msg-py-2 msg-px-4'>
-                  <div>{data}</div>
-                  <div className='mst-opacity-50 msg-xs-small'>10:28 PM</div>
+                  <div dangerouslySetInnerHTML={{ __html: data }} />
+                  <div className='mst-opacity-50 msg-xs-small'>{!self&&'Q'||'A'} 2023-05-06 13:29</div>
               </div>
             </div>
         </div>

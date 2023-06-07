@@ -35,6 +35,7 @@ export default function Message() {
   const [twoHeight, settwoHeight] = useState(false);
   const [iw, setIw] = useState(100);
   const inputRef = useRef(null);
+  const [limit, setLimit] = useState();
   const [list, setList] = useState(DATA);
   const [openChain, setOpenChain] = useState(false);
   const chainList = [
@@ -60,24 +61,54 @@ export default function Message() {
   const getChatGptMessage = () => {
     // setMessages(data => [...data, { content: 123, is_send: 0 }]);
     // saveDB(123, 0); 红烧肉怎么做
-    setMessageList(data=>[...data,{self:true,content:message}]);
+    setMessageList(data => {
+      const newData = [...data, { self: true, content: message }];
+      return newData;
+
+    });
+    setMessage('');
     post('/api/v1/chat/chatgpt', {
-      "prompt":message
+      "prompt": message
     }).then(response => {
       // console.log('response',response);
-      if(response.code==0){
-      // 保存到数据库
-      setMessageList(data=>[...data,{self:false,content:response.response}]);
-      }
-      else{
-      // 保存到数据库
-      setMessageList(data=>[...data,{self:false,content:response.message}]);
-      }
+      if (response.code == 0) {
+        // 保存到数据库
+        setMessageList(data => {
+          const newData = [...data, { self: false, content: response.response }];
+          return newData;
 
+        });
+       
+      }
+      else {
+        // 保存到数据库
+        setMessageList(data => {
+          const newData = [...data, { self: false, content: "请重试一次" }];
+          return newData;
+
+        });
+       
+      }
       // saveDB(response.code == 0 && response.response||response.message, 0);
 
     })
+    console.log(messageList);
   }
+  useEffect(() => {
+    // 获取chatgpt剩余条数
+    if (current == 0) {
+      // /api/v1/chat/chatgpt_limit
+        get('/api/v1/chat/chatgpt_limit').then(response => {
+          console.log('response', response);
+          setLimit(response);
+        })
+    }
+    // 其他操作
+    else {
+
+    }
+
+  }, [current]);
   return (
     <div>
       <div className='message'>
@@ -186,25 +217,32 @@ export default function Message() {
             {
               action == 1 && <>
                 <div className='header msg_flex msg_flex_between msg_items_center msg_border_b'>
-                  <HeadImg data={list[current]} />
-                  {/* <div><SettingOutlined /></div> */}
-                </div>
-                <div className='detail_list msg_flex msg-flex-col-reverse'>
+                <div className='chatgpt_limit'><HeadImg data={list[current]} />
+                 
+                  今日已用{limit?.max_daily_call_count - limit?.daily_left_call_count}次，剩余{limit?.daily_left_call_count}次
+                  </div>
 
-                {messageList.map(item=><DetailItem data={item.content} self={!item.self} />)}
+                </div>
+                <div className='detail_list msg_flex msg-flex-col'>
+
+                  {messageList.map(item => <DetailItem data={item.content} self={!item.self} />)}
                   {/* <DetailItem />
                   <DetailItem self /> */}
 
                 </div>
-                <div style={{ padding: '10px' }}>
-                  <div className='flex'>
-                    <TextArea
+                <div style={{ padding: '10px 0 8px' }}>
+                  <div className='baseinput'>
+                    <textarea
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      placeholder=""
-                      autoSize={{ minRows: 1, maxRows: 6 }}
+                      placeholder="说点什么吧"
+                      className='baseta'
+
                     />
-                    <Button onClick={getChatGptMessage}>发送</Button>
+                    <div style={{textAlign:'right',padding:'10px'}}>
+                    <Button type="primary" onClick={getChatGptMessage}>发送</Button>
+
+                    </div>
                   </div>
 
                   {/* <Input style={{ height: twoHeight && '44px' || '30px', transition: 'all 0.1s' }} onFocus={() => settwoHeight(true)} onBlur={() => settwoHeight(false)} /> */}

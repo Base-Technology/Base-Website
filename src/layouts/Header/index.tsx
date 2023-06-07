@@ -140,14 +140,12 @@ export default function Header() {
                     <Button className='btn'>1</Button>
                     <Button className='btn'>1</Button> */}
       </div>
-      <div className='right'>
-        <Button type='primary'>登录</Button>
-        {/* {!dark && <Dark style={{ fill: '#422DDD', width: '30px' }} onClick={() => switchTheme(true)} /> || <Light style={{ width: '30px'}} onClick={() => switchTheme(false)} />} */}
-      </div>
+
       <Modal
         open={visible}
         footer={null}
         width={400}
+        closeIcon={null}
       >
         <h2>手机号登录</h2>
         {

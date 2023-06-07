@@ -14,7 +14,7 @@ export default function MessageItem(props:any) {
   // },)
   return (
     <div className='msg_overflow_hidden msg_shrink_0' style={{fontSize:'12px'}}>
-      <div className='msg_flex msg_items_center  msg-py-2 msg-px-4'>
+      <div className='msg_flex msg_items_center  msg-py-2'>
         <div className='msg_flex'>
           <div className='msg_flex msg_bg_neutral_900 msg-rounded-full msg-w-12 msg-h-12 msg_items_center msg-justify-center'>
             <div className='msg-text-base'>
