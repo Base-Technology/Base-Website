@@ -1,0 +1,41 @@
+.tokenwrap {
+    overflow: hidden;
+}
+
+.tokenlist {
+    margin-top: 10px;
+
+    .item {
+        display: flex;
+        justify-content: space-between;
+        border-radius: 5px;
+        padding: 10px 20px;
+        line-height: 36px;
+        cursor: pointer;
+
+        &:hover {
+            background: var(--selecthover);
+        }
+
+        &>div {
+            display: flex;
+            align-items: center;
+
+            img {
+                width: 30px;
+                margin-right: 5px;
+            }
+
+            p {
+                margin: 0;
+            }
+        }
+    }
+}
+
+.chainselect {
+    margin-bottom: 1em;
+    border: 1px solid var(--bordercolor);
+    border-radius: 2px;
+    padding: 11px 10px;
+}
