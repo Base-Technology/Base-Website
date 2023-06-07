@@ -1,6 +1,6 @@
 import axios from 'axios';
 const api = axios.create({
-  // baseURL: 'https://movie.jdd001.top', // 设置基础URL
+  baseURL: 'https://movie.jdd001.top', // 设置基础URL
   timeout: 500000, // 设置请求超时时间
 });
 

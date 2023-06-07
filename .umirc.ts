@@ -24,11 +24,11 @@ export default {
   routes: [
     { path: '/', component: '@/pages/Message' },
   ],
-  proxy: {
-    '/api': {
-      'target': 'https://movie.jdd001.top',
-      'changeOrigin': true,
-      // 'pathRewrite': { '^/api' : '' },
-    },
-  },
+  // proxy: {
+  //   '/api': {
+  //     'target': 'https://movie.jdd001.top',
+  //     'changeOrigin': true,
+  //     // 'pathRewrite': { '^/api' : '' },
+  //   },
+  // },
 };

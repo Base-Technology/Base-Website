@@ -60,17 +60,18 @@ export default function Message() {
   const getChatGptMessage = () => {
     // setMessages(data => [...data, { content: 123, is_send: 0 }]);
     // saveDB(123, 0); 红烧肉怎么做
+    setMessageList(data=>[...data,{self:true,content:message}]);
     post('/api/v1/chat/chatgpt', {
       "prompt":message
     }).then(response => {
       // console.log('response',response);
       if(response.code==0){
       // 保存到数据库
-      setMessageList(data=>[...data,response.response]);
+      setMessageList(data=>[...data,{self:false,content:response.response}]);
       }
       else{
       // 保存到数据库
-      setMessageList(data=>[...data,response.message]);
+      setMessageList(data=>[...data,{self:false,content:response.message}]);
       }
 
       // saveDB(response.code == 0 && response.response||response.message, 0);
@@ -190,7 +191,7 @@ export default function Message() {
                 </div>
                 <div className='detail_list msg_flex msg-flex-col-reverse'>
 
-                {messageList.map(item=><DetailItem data={item} />)}
+                {messageList.map(item=><DetailItem data={item.content} self={!item.self} />)}
                   {/* <DetailItem />
                   <DetailItem self /> */}
 
