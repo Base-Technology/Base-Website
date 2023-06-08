@@ -3,10 +3,10 @@ import { Button, Card, InputNumber, Input } from 'antd';
 import { Menu, Space } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-
+import { ReactComponent as Group } from '@/assets/icon_group_small.svg'
 export default function MessageItem(props:any) {
 
-  const { checked,data:{header,name} } = props;
+  const { checked,data:{header,name,type} } = props;
   // useEffect(()=>{
 
   // },)
@@ -24,8 +24,8 @@ export default function MessageItem(props:any) {
         </div>
         <div className='msg_flex msg-grow msg_flex_between msg-pr-2 msg-truncate'>
           <div className='msg-truncate msg-flex-col msg-max-w-full'>
-            <div>
-              <div style={{ fontSize: '16px', fontWeight: '400' }}>{name}</div>
+            <div style={{display:'flex',alignItems:'center'}}>
+             {type!==1&&<Group width={20} height={20} />} <div style={{ fontSize: '16px', fontWeight: '400' }}>{name}</div>
             </div>
             <div className='msg-truncate'>
               <div className='msg-truncate'><span style={{ display: 'inline-block', minWidth: '20px', height: '20px', borderRadius: '10px', textAlign: 'center', background: '#422DDD', padding: '0 5px', fontSize: '12px',color:'#ffffff' }}>221</span>&nbsp;you:hello</div>

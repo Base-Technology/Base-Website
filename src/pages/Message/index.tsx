@@ -102,8 +102,8 @@ export default function Message() {
           console.log('response', response);
           setLimit(response);
         })
-    }
-    // 其他操作
+    } 
+    // 其他操作 获取关注人数
     else {
 
     }
