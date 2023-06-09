@@ -69,7 +69,7 @@ export default function Header() {
         "phone": values.phone,
         "area": "default",
         "school": values.school,
-        "validate_code": values.verificationCode,
+        "validate_code": values.validate_code,
         "avatar": values.avatar
       }
       // return ;
