@@ -1,12 +1,15 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useContext } from 'react'
 import { Button, Card, InputNumber, Input, Divider, Switch, Drawer } from 'antd';
 import { Menu, Space } from 'antd';
 import { EditOutlined, SettingOutlined, TeamOutlined, PlusOutlined, ArrowLeftOutlined, MessageOutlined, UnlockOutlined, SearchOutlined, CloseOutlined, SwapOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { get, post } from '@/utils/request';
+import { getFromLocalStorage } from "@/utils";
+import dayjs from 'dayjs'
 import MessageItem from './MessageItem';
 import DetailItem from './DetailItem';
 import HeadImg from './HeadImg';
+import { UserContext } from "../../layouts/UserProvider";
 import './index.less';
 const { TextArea } = Input;
 const DATA = [
@@ -17,17 +20,17 @@ const DATA = [
     content: '...',
     route: 'ChatGpt',
     header: 'https://bf.jdd001.top/cryptologos/chatgpt.png'
-  // },
-  // {
-  //   id: '2',
-  //   name: '鲸馆小张',
-  //   type: 2,
-  //   content: '...',
-  //   header: 'https://bf.jdd001.top/cryptologos/zy.png'
+    // },
+    // {
+    //   id: '2',
+    //   name: '鲸馆小张',
+    //   type: 2,
+    //   content: '...',
+    //   header: 'https://bf.jdd001.top/cryptologos/zy.png'
   }
 ];
 export default function Message() {
-
+  const { token } = useContext(UserContext)!;
   const [action, setAction] = useState(1);
   const [current, setCurrent] = useState(0);
   const [message, setMessage] = useState('');
@@ -61,20 +64,21 @@ export default function Message() {
   const getChatGptMessage = () => {
     // setMessages(data => [...data, { content: 123, is_send: 0 }]);
     // saveDB(123, 0); 红烧肉怎么做
-    setMessageList(data => {
-      const newData = [...data, { self: true, content: message }];
+    setMessageList((data): any => {
+      const newData = [...data, { self: true, content: message, datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
       return newData;
-
     });
     setMessage('');
+    
     post('/api/v1/chat/chatgpt', {
       "prompt": message
     }).then(response => {
       // console.log('response',response);
       if (response.code == 0) {
+        getLimit();
         // 保存到数据库
         setMessageList(data => {
-          const newData = [...data, { self: false, content: response.response }];
+          const newData = [...data, { self: false, content: response.response, datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
           return newData;
 
         });
@@ -83,14 +87,14 @@ export default function Message() {
       else {
         // 保存到数据库
         setMessageList(data => {
-          const newData = [...data, { self: false, content: "请重试一次" }];
+          const newData = [...data, { self: false, content: "请重试一次", datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
           return newData;
 
         });
 
       }
       // saveDB(response.code == 0 && response.response||response.message, 0);
-
+      
     })
     console.log(messageList);
   }
@@ -98,21 +102,33 @@ export default function Message() {
     // 获取chatgpt剩余条数
     if (current == 0) {
       // /api/v1/chat/chatgpt_limit
-      get('/api/v1/chat/chatgpt_limit').then(response => {
-        console.log('response', response);
-        setLimit(response);
-      })
+      getLimit();
     }
     // 其他操作 获取关注人数
     else {
 
     }
+    
+  }, [token]);
+  useEffect(() => {
 
-  }, [current]);
+    const chatgptData = getFromLocalStorage('chatgptData');
+    if(chatgptData){
+      setMessageList(chatgptData);
+    }
+    
+  }, [token]);
   useEffect(()=>{
-    // getList();
-  },[]);
-
+      localStorage.setItem('chatgptData', JSON.stringify(messageList));
+    
+  },[messageList.length]);
+  //  获取chatgpt次数
+  const getLimit = () => {
+    get('/api/v1/chat/chatgpt_limit').then((response: any) => {
+      console.log('response', response);
+      setLimit(response);
+    })
+  }
   // 获取
   const getList = () => {
     // /api/v1/group/user
@@ -126,7 +142,7 @@ export default function Message() {
             name: response.data[0].school,
             type: 2,
             content: '...',
-            members:response.data.length
+            members: response.data.length
           }];
         });
       }
@@ -247,23 +263,23 @@ export default function Message() {
 
                       </p>
                       {
-                        list[current]?.type==1&& <p style={{    fontSize: '12px', color: 'gray'}}>
-                        今日已用{limit?.max_daily_call_count - limit?.daily_left_call_count}次，剩余{limit?.daily_left_call_count}次
+                        list[current]?.type == 1 && <p style={{ fontSize: '12px', color: 'gray' }}>
+                          今日已用{limit?.max_daily_call_count - limit?.daily_left_call_count}次，剩余{limit?.daily_left_call_count}次
 
-                      </p>||
-                       <p style={{    fontSize: '12px', color: 'gray'}}>
-                      {list[current]?.members} 成员
+                        </p> ||
+                        <p style={{ fontSize: '12px', color: 'gray' }}>
+                          {list[current]?.members} 成员
 
-                     </p>
+                        </p>
                       }
-                     
+
                     </div>
                   </div>
 
                 </div>
                 <div className='detail_list msg_flex msg-flex-col'>
 
-                  {messageList.map(item => <DetailItem data={item.content} self={!item.self} />)}
+                  {messageList.map(item => <DetailItem data={item.content} self={!item.self} datetime={item.datetime} />)}
                   {/* <DetailItem />
                   <DetailItem self /> */}
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useContext } from 'react'
 import { Modal, Input, Button, Form, Select, DatePicker, Row, Col } from 'antd';
 import { Upload } from 'antd';
 import ImgCrop from 'antd-img-crop';
@@ -13,8 +13,8 @@ import { get, post } from '@/utils/request';
 import Tabs from './Tabs';
 import UploadHeader from "./uploadHeader";
 import SchoolData from "./schoolData";
+import {UserContext} from "../UserProvider";
 import './index.less'
-
 const Countdown = ({ seconds, onFinish }: any) => {
   const [counter, setCounter] = useState(seconds);
 
@@ -36,6 +36,7 @@ const Countdown = ({ seconds, onFinish }: any) => {
   return <div>{counter}s后重新发送</div>;
 };
 export default function Header() {
+  const { updateData } = useContext(UserContext)!;
   const [dark, setDark] = useState(true);
   const [visible, setVisible] = useState(false);
   const [phone, setPhone] = useState('');
@@ -56,6 +57,7 @@ export default function Header() {
         if (response.code == "0") {
           sessionStorage.setItem('token', response.token);
           setVisible(false);
+          updateData(response.token);
         }
         else {
           alert(response.message);
