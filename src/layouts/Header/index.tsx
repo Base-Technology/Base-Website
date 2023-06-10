@@ -78,6 +78,7 @@ export default function Header() {
       post('/api/v1/register', data).then((response: any) => {
         console.log('response', response);
         if (response.code == "0") {
+          setSwitchModal(true);
         }
         else {
           // navigation.navigate('UserInfo');
