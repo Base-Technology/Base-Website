@@ -17,14 +17,13 @@ const DATA = [
     content: '...',
     route: 'ChatGpt',
     header: 'https://bf.jdd001.top/cryptologos/chatgpt.png'
-  },
-  {
-    id: '2',
-    name: '鲸馆小张',
-    type: 2,
-    members:0,
-    content: '...',
-    header: 'https://bf.jdd001.top/cryptologos/zy.png'
+  // },
+  // {
+  //   id: '2',
+  //   name: '鲸馆小张',
+  //   type: 2,
+  //   content: '...',
+  //   header: 'https://bf.jdd001.top/cryptologos/zy.png'
   }
 ];
 export default function Message() {
