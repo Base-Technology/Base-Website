@@ -96,7 +96,7 @@ export default function Header() {
     const response = await get('/api/v1/info');
     // console.log('首页',response);
     if (response.code == "0") {
-
+      sessionStorage.setItem('header',response.avatar)
     }
     else {
       setVisible(true);
@@ -136,21 +136,9 @@ export default function Header() {
   };
   const [form] = Form.useForm();
   return (
-    <header style={{ padding: '0 30px' }}>
+    <>
 
-      <div className='left' style={{ display: 'flex', alignItems: 'center' }}>
-        {/* <img src={sendFinance} className='topImage' ></img> */}
-        <img src={!dark && Logo || LogoBlue} className='topImage' />
-        {/* <Button className='btn'>1</Button>
-                    <Button className='btn'>1</Button>
-                    <Button className='btn'>1</Button> */}
-      </div>
-      {/* <div className='right' style={{ display: 'flex', alignItems: 'center' }}>
-        <a>关于我们</a>
-        <a>
-          下载APP
-        </a>
-      </div> */}
+      
       <Modal
         open={visible}
         footer={null}
@@ -292,6 +280,6 @@ export default function Header() {
         }
 
       </Modal>
-    </header>
+    </>
   )
 }

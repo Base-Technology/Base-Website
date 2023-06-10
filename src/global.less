@@ -199,15 +199,11 @@ input[type="radio"] {
 .message {
     width: 100%;
     position: relative;
-    max-width: 1024px;
     margin: auto;
     color: var(--messagecolor);
     background: var(--messagebg);
     overflow: hidden;
-    height: calc(100vh - 200px);
-    margin-top: 30px;
     border-radius: 2px;
-    box-shadow: var(--messagebs);
     font-family: 'Karla';
 
     * {
@@ -237,11 +233,11 @@ input[type="radio"] {
     }
 
     h1 {
-        color: #ffffff;
+        text-align: center;
     }
 
     .msg_main {
-        height: calc(100vh - 12rem);
+        height: 100vh;
         width: 100%;
         border: none;
         display: flex;
@@ -250,7 +246,7 @@ input[type="radio"] {
         .friendlist {
             height: 100%;
             overflow: auto;
-            min-width: 350px;
+            min-width: 240px;
             --tw-border-opacity: 1;
             border-right: 1px solid var(--bordercolor);
             overflow: hidden;
@@ -379,8 +375,8 @@ input[type="radio"] {
 
         .msg_bg_subtle_hover {
             &:hover {
-                background-color: #ababab20;
-
+                background-color: #E0E0E0;
+                cursor: pointer;
             }
         }
 
@@ -415,7 +411,7 @@ input[type="radio"] {
 
         .msg-xs {
             font-size: 14px;
-            line-height: 56px;
+            line-height: 36px;
         }
 
         .msg-text-base {
