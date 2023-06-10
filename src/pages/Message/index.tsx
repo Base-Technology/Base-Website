@@ -22,6 +22,7 @@ const DATA = [
     id: '2',
     name: '鲸馆小张',
     type: 2,
+    members:0,
     content: '...',
     header: 'https://bf.jdd001.top/cryptologos/zy.png'
   }
@@ -78,7 +79,7 @@ export default function Message() {
           return newData;
 
         });
-       
+
       }
       else {
         // 保存到数据库
@@ -87,7 +88,7 @@ export default function Message() {
           return newData;
 
         });
-       
+
       }
       // saveDB(response.code == 0 && response.response||response.message, 0);
 
@@ -98,17 +99,40 @@ export default function Message() {
     // 获取chatgpt剩余条数
     if (current == 0) {
       // /api/v1/chat/chatgpt_limit
-        get('/api/v1/chat/chatgpt_limit').then(response => {
-          console.log('response', response);
-          setLimit(response);
-        })
-    } 
+      get('/api/v1/chat/chatgpt_limit').then(response => {
+        console.log('response', response);
+        setLimit(response);
+      })
+    }
     // 其他操作 获取关注人数
     else {
 
     }
 
   }, [current]);
+  useEffect(()=>{
+    getList();
+  },[]);
+
+  // 获取
+  const getList = () => {
+    // /api/v1/group/user
+    get('/api/v1/group/user').then(response => {
+      // console.log('/api/v1/group/user', response);
+      if (response.code == 0 && response.data.length > 0) {
+        setList(data => {
+          console.log(data);
+          return [...data, {
+            id: response.data[0].id,
+            name: response.data[0].school,
+            type: 2,
+            content: '...',
+            members:response.data.length
+          }];
+        });
+      }
+    })
+  }
   return (
     <div>
       <div className='message'>
@@ -217,9 +241,24 @@ export default function Message() {
             {
               action == 1 && <>
                 <div className='header msg_flex msg_flex_between msg_items_center msg_border_b'>
-                <div className='chatgpt_limit'><HeadImg data={list[current]} />
-                 
-                  今日已用{limit?.max_daily_call_count - limit?.daily_left_call_count}次，剩余{limit?.daily_left_call_count}次
+                  <div className='chatgpt_limit'><HeadImg data={list[current]} />
+                    <div>
+                      <p>
+                        {list[current]?.name}
+
+                      </p>
+                      {
+                        list[current]?.type==1&& <p style={{    fontSize: '12px', color: 'gray'}}>
+                        今日已用{limit?.max_daily_call_count - limit?.daily_left_call_count}次，剩余{limit?.daily_left_call_count}次
+
+                      </p>||
+                       <p style={{    fontSize: '12px', color: 'gray'}}>
+                      {list[current]?.members} 成员
+
+                     </p>
+                      }
+                     
+                    </div>
                   </div>
 
                 </div>
@@ -239,8 +278,8 @@ export default function Message() {
                       className='baseta'
 
                     />
-                    <div style={{textAlign:'right',padding:'10px'}}>
-                    <Button type="primary" onClick={getChatGptMessage}>发送</Button>
+                    <div style={{ textAlign: 'right', padding: '10px' }}>
+                      <Button type="primary" onClick={getChatGptMessage}>发送</Button>
 
                     </div>
                   </div>

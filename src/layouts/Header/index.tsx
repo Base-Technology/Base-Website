@@ -46,23 +46,23 @@ export default function Header() {
   }
   const onFinish = (values: any) => {
     console.log('Success:', values);
-    if(switchModal){
+    if (switchModal) {
       const data = {
         "password": values.password,
         "phone": values.phone
       }
-      post('/api/v1/login', data).then((response:any) => {
+      post('/api/v1/login', data).then((response: any) => {
         console.log('response', response);
         if (response.code == "0") {
           sessionStorage.setItem('token', response.token);
           setVisible(false);
         }
         else {
-         alert(response.message);
+          alert(response.message);
         }
       })
     }
-    else{
+    else {
       const data = {
         "username": values.username,
         "password": values.password,
@@ -85,17 +85,17 @@ export default function Header() {
     }
 
   };
-  useEffect(()=>{
+  useEffect(() => {
     getUserInfo();
-  },[]);
+  }, []);
   const getUserInfo = async () => {
     // /api/v1/info
-    const response =await get('/api/v1/info');
+    const response = await get('/api/v1/info');
     // console.log('首页',response);
-    if(response.code == "0"){
-      
+    if (response.code == "0") {
+
     }
-    else{
+    else {
       setVisible(true);
     }
   }
@@ -140,7 +140,12 @@ export default function Header() {
                     <Button className='btn'>1</Button>
                     <Button className='btn'>1</Button> */}
       </div>
-
+      <div className='right' style={{ display: 'flex', alignItems: 'center' }}>
+        <a>关于我们</a>
+        <a>
+          下载APP
+        </a>
+      </div>
       <Modal
         open={visible}
         footer={null}
