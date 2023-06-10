@@ -110,7 +110,7 @@ export default function Message() {
 
   }, [current]);
   useEffect(()=>{
-    getList();
+    // getList();
   },[]);
 
   // 获取

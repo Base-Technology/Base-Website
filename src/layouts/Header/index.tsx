@@ -103,21 +103,22 @@ export default function Header() {
   const [showCode, setShowCode] = useState(false);
 
   const handleStartCountdown = () => {
-    const data = {
-      "phone": phone,
-    }
-    post('/api/v1/validate_code', data).then((response: any) => {
-      console.log('response', response);
-      if (response.code == 0) {
-        // navigation.navigate('UserInfo');
-        // 设置计时器为60秒
-        setShowCode(true);
+    form.validateFields(['phone']).then((values) => {
+      const data = {
+        "phone": values.phone,
       }
-      else {
-        alert(response.message);
-      }
+      post('/api/v1/validate_code', data).then((response: any) => {
+        console.log('response', response);
+        if (response.code == 0) {
+          // navigation.navigate('UserInfo');
+          // 设置计时器为60秒
+          setShowCode(true);
+        }
+        else {
+          alert(response.message);
+        }
+      })
     })
-
   };
 
   const handleCountdownFinish = () => {
@@ -130,6 +131,7 @@ export default function Header() {
     }
     return Promise.reject(new Error('请上传头像!'));
   };
+  const [form] = Form.useForm();
   return (
     <header style={{ padding: '0 30px' }}>
 
@@ -140,12 +142,12 @@ export default function Header() {
                     <Button className='btn'>1</Button>
                     <Button className='btn'>1</Button> */}
       </div>
-      <div className='right' style={{ display: 'flex', alignItems: 'center' }}>
+      {/* <div className='right' style={{ display: 'flex', alignItems: 'center' }}>
         <a>关于我们</a>
         <a>
           下载APP
         </a>
-      </div>
+      </div> */}
       <Modal
         open={visible}
         footer={null}
@@ -161,6 +163,7 @@ export default function Header() {
             onFinish={onFinish}
             // onFinishFailed={onFinishFailed}
             autoComplete="off"
+            form={form}
           >
             {switchModal && <>
               <Form.Item
