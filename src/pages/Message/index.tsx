@@ -156,7 +156,7 @@ export default function Message() {
             </div>
             {/* <div ><TeamOutlined />&nbsp;<EditOutlined onClick={() => setAction(0)} /></div> */}
           </div>
-          <div className='msg_list' style={{ borderRight: '1px solid var(--bordercolor)' }}>
+          <div className='msg_list'>
             <div className='msg_flex msg_flex_between msg_bg_subtle_hover' style={{ padding: '10px 18px', alignItems: 'center' }}>
               <div>
                 <img style={{ borderRadius: '40px', marginRight: '10px' }} width={40} src='/icon_contact.svg' />
@@ -335,7 +335,30 @@ export default function Message() {
                 </div>
                 {/* info */}
                 <div style={{ minWidth: '460px', background: '#F5F5F5' }}>
-                  <h1>ChatGpt</h1>
+                  <div style={{ width: '100%', minHeight: '150px', background: 'rgb(224, 224, 224)', padding: '20px' }}>
+                    <div className='msg_flex'>
+                      <img style={{ borderRadius: '40px', marginRight: '10px' }} width={50} src={sessionStorage.getItem('header')} />
+
+                      <div>
+                        <p>Doctor</p>
+                        <p>ID:#1234</p>
+                      </div>
+                    </div>
+                    <div style={{margin:'20px 0 10px'}}>
+                      菩提本无树，明镜亦非台
+                    </div>
+                    <div>
+                      <div style={{background:'#FBFBFD',display:'inline-block',padding:'0 5px',borderRadius:'10px'}}>
+                        <img width={20} src='/female.svg'/>
+                      </div>
+                      <div style={{background:'#FBFBFD',display:'inline-block',padding:'0 10px',borderRadius:'10px',marginLeft:'10px'}}>
+                        1992-03
+                      </div>
+                      <div style={{background:'#FBFBFD',display:'inline-block',padding:'0 10px',borderRadius:'10px',marginLeft:'10px'}}>
+                        清华大学
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
