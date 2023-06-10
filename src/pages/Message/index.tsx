@@ -294,7 +294,7 @@ export default function Message() {
 
                     />
                     <div style={{ textAlign: 'right', padding: '10px' }}>
-                      <Button type="primary" onClick={getChatGptMessage}>发送</Button>
+                      <Button disabled={message==''} type="primary" onClick={getChatGptMessage}>发送</Button>
 
                     </div>
                   </div>
