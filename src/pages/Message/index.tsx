@@ -31,6 +31,7 @@ const DATA = [
 ];
 export default function Message() {
   const { token } = useContext(UserContext)!;
+  const [loading, setLoading] = useState(false);
   const [action, setAction] = useState(1);
   const [current, setCurrent] = useState(0);
   const [message, setMessage] = useState('');
@@ -69,7 +70,7 @@ export default function Message() {
       return newData;
     });
     setMessage('');
-    
+   setLoading(true);
     post('/api/v1/chat/chatgpt', {
       "prompt": message
     }).then(response => {
@@ -94,8 +95,8 @@ export default function Message() {
 
       }
       // saveDB(response.code == 0 && response.response||response.message, 0);
-      
-    })
+      setLoading(false);
+    }).catch(()=>setLoading(false))
     console.log(messageList);
   }
   useEffect(() => {
@@ -108,20 +109,20 @@ export default function Message() {
     else {
 
     }
-    
+
   }, [token]);
   useEffect(() => {
 
     const chatgptData = getFromLocalStorage('chatgptData');
-    if(chatgptData){
+    if (chatgptData) {
       setMessageList(chatgptData);
     }
-    
+
   }, [token]);
-  useEffect(()=>{
-      localStorage.setItem('chatgptData', JSON.stringify(messageList));
-    
-  },[messageList.length]);
+  useEffect(() => {
+    localStorage.setItem('chatgptData', JSON.stringify(messageList));
+
+  }, [messageList.length]);
   //  获取chatgpt次数
   const getLimit = () => {
     get('/api/v1/chat/chatgpt_limit').then((response: any) => {
@@ -294,7 +295,14 @@ export default function Message() {
 
                     />
                     <div style={{ textAlign: 'right', padding: '10px' }}>
-                      <Button disabled={message==''} type="primary" onClick={getChatGptMessage}>发送</Button>
+                      {
+                        loading &&
+                        <Button type="primary">生成中...</Button>
+
+                        ||
+                        <Button disabled={message == ''} type="primary" onClick={getChatGptMessage}>发送</Button>
+
+                      }
 
                     </div>
                   </div>
