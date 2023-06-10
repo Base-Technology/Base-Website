@@ -32,6 +32,7 @@ const DATA = [
 export default function Message() {
   const { token } = useContext(UserContext)!;
   const [loading, setLoading] = useState(false);
+  const bottomRef = useRef(null);
   const [action, setAction] = useState(1);
   const [current, setCurrent] = useState(0);
   const [message, setMessage] = useState('');
@@ -121,7 +122,10 @@ export default function Message() {
   }, [token]);
   useEffect(() => {
     localStorage.setItem('chatgptData', JSON.stringify(messageList));
-
+    if (bottomRef.current) {
+      const container = bottomRef.current;
+      container.scrollTop = container.scrollHeight;
+    }
   }, [messageList.length]);
   //  获取chatgpt次数
   const getLimit = () => {
@@ -278,7 +282,7 @@ export default function Message() {
                   </div>
 
                 </div>
-                <div className='detail_list msg_flex msg-flex-col'>
+                <div className='detail_list msg_flex msg-flex-col'  ref={bottomRef}>
 
                   {messageList.map(item => <DetailItem data={item.content} self={!item.self} datetime={item.datetime} />)}
                   {/* <DetailItem />
