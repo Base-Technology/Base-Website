@@ -6,13 +6,13 @@ import { Link } from 'react-router-dom';
 import { ReactComponent as Group } from '@/assets/icon_group_small.svg'
 export default function MessageItem(props:any) {
 
-  const { checked,data:{header,name,type} } = props;
+  const { checked,data:{header,name,type},onClick } = props;
   // useEffect(()=>{
 
   // },)
   return (
-    <div className='msg_overflow_hidden msg_shrink_0'>
-      <div className={`msg_flex msg_items_center msg_cursor_pointer msg_select_none msg_bg_subtle_hover ${checked && 'msg_bg_subtle_night'} msg-py-2 msg-px-4`}>
+    
+      <>
         <div className='msg_flex'>
           <div className='msg_flex msg_bg_neutral_900 msg-rounded-full msg_items_center msg-justify-center'>
             <div className='msg-text-lg'>
@@ -32,7 +32,6 @@ export default function MessageItem(props:any) {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </>
   )
 }

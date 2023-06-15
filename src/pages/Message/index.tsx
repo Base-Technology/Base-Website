@@ -3,7 +3,11 @@ import { Button, Card, InputNumber, Input, Divider, Switch, Drawer } from 'antd'
 import { Menu, Space } from 'antd';
 import { EditOutlined, SettingOutlined, TeamOutlined, PlusOutlined, ArrowLeftOutlined, MessageOutlined, UnlockOutlined, SearchOutlined, CloseOutlined, SwapOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { ethers } from 'ethers';
+import { OpenIMSDK } from 'open-im-sdk'
+import { getSDK } from "open-im-sdk-wasm";
 import { get, post } from '@/utils/request';
+import MessageList from '@/components/BaseMessageList';
 import { getFromLocalStorage } from "@/utils";
 import dayjs from 'dayjs'
 import MessageItem from './MessageItem';
@@ -13,7 +17,14 @@ import { UserContext } from "../../layouts/UserProvider";
 import './index.less';
 const { TextArea } = Input;
 const DATA = [
-
+  {
+    id: '1',
+    name: 'ChatGPT',
+    type: 1,
+    content: '...',
+    route: 'ChatGpt',
+    header: 'https://bf.jdd001.top/cryptologos/chatgpt.png'
+  },
   {
     id: '2',
     name: '鲸馆小张',
@@ -30,6 +41,7 @@ export default function Message() {
   const [current, setCurrent] = useState(0);
   const [message, setMessage] = useState('');
   const [messageList, setMessageList] = useState([]);
+  const [userList, setUserList] = useState([]);
   const [twoHeight, settwoHeight] = useState(false);
   const [iw, setIw] = useState(100);
   const inputRef = useRef(null);
@@ -103,7 +115,55 @@ export default function Message() {
     else {
 
     }
+    getList();
+    // const openIM = new OpenIMSDK();
+    const openIM = getSDK()
 
+    const wallet = new ethers.Wallet("0x012540cd5fc11e09978c77885f1a434f24b6e9230c2b7b5b5e117ec473404762");
+    const address = wallet.address;
+    wallet.signMessage("hello").then(e => {
+    });
+    const config = {
+      userID: "78",
+      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzgsImV4cCI6MjAwMjE4MTE0MywiaWF0IjoxNjg2ODIxMTQzfQ.7ffLVawZXACYII_4p9adl4M4QCjYkJQDAbymC0f4P_o",
+      apiAddress: "http://121.5.182.23:10002",
+      wsAddress: "ws://121.5.182.23:10001",
+      platformID: 5,
+      // apiAddress: "http://119.45.212.83:10002",
+      // url: "ws://119.45.212.83:9204",                          // 平台号
+
+    };
+
+    openIM.login(config).then(async res => {
+      console.log("login suc...",res);
+      // openIM.getSelfUserInfo().then(res => {
+      //   debugger
+      //   // 101:登录成功 102:登陆中 103:登录失败 201:登出
+      // }).catch(err => {
+      //   debugger
+      // })
+      debugger
+      // operationID
+      // openIM.getLoginUser().then(res => {
+      //   debugger;
+      //   // 当前登录用户ID
+      // }).catch(err => {
+      
+      // })
+      const newTextMsg = await openIM.createTextMessage("abc")
+      const options = {
+        recvID: "",
+        groupID: "3611454841",
+        message: newTextMsg.data,
+      };
+      openIM.sendMessageNotOss(options).then(({ data,errCode })=>{
+        debugger;
+      }).catch(err=>{
+        debugger
+      })
+    }).catch(err => {
+      console.log("login failed...");
+    })
   }, [token]);
   useEffect(() => {
 
@@ -143,6 +203,7 @@ export default function Message() {
             members: response.data.length
           }];
         });
+        setUserList(response.data);
       }
     })
   }
@@ -172,31 +233,16 @@ export default function Message() {
                 <img width={25} src="/icon_settings.svg" />
               </div>
             </div>
-            <div style={{ marginBottom: '20px' }}>
-              <MessageItem data={{
-                id: '1',
-                name: 'ChatGPT',
-                type: 1,
-                content: '...',
-                route: 'ChatGpt',
-                header: 'https://bf.jdd001.top/cryptologos/chatgpt.png'
-              }} />
-            </div>
+            <MessageList value='none' onSelect={() => { }}>
+              {
+                list.map((item, index) =>
 
-            {
-              list.map((item, index) => <div onClick={() => {
-                setList(data => {
-                  const newData = data.map(item => { item.checked = false; return item; }).map((item, index2) => {
-                    if (index2 == index) {
-                      item.checked = true;
-                    }
-                    return item;
-                  })
-                  return newData;
-                });
-                setCurrent(index);
-              }}><MessageItem data={item} /></div>)
-            }
+                  <MessageList.Item value={index}>
+                    <MessageItem data={item} />
+                  </MessageList.Item>)
+              }
+            </MessageList>
+
             <p><br /></p>
           </div>
         </div>
@@ -296,10 +342,12 @@ export default function Message() {
 
                   </div>
                 </div>
-
+                <div>
+                  <Input placeholder="搜索" prefix={<SearchOutlined />} />
+                </div>
               </div>
-              <div className='msg_flex msg_flex_between' style={{ flex: 1 }}>
-                <div className='msg_flex msg_flex_col'>
+              <div className='msg_flex msg_flex_between' style={{ flex: 1, height: '100%' }}>
+                <div className='' style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: 'calc(100% - 60px)' }}>
                   <div className='detail_list msg_flex msg-flex-col' ref={bottomRef}>
 
                     {messageList.map(item => <DetailItem data={item.content} self={!item.self} datetime={item.datetime} />)}
@@ -307,7 +355,7 @@ export default function Message() {
   <DetailItem self /> */}
 
                   </div>
-                  <div style={{ padding: '10px 0 8px' }}>
+                  <div style={{ padding: '10px 0 8px', minHeight: '200px' }}>
                     <div className='baseinput'>
                       <textarea
                         value={message}
@@ -334,7 +382,7 @@ export default function Message() {
                   </div>
                 </div>
                 {/* info */}
-                <div style={{ minWidth: '460px', background: '#F5F5F5' }}>
+                <div style={{ minWidth: '460px',width: '460px', background: '#F5F5F5' }}>
                   <div style={{ width: '100%', minHeight: '150px', background: 'rgb(224, 224, 224)', padding: '20px' }}>
                     <div className='msg_flex'>
                       <img style={{ borderRadius: '40px', marginRight: '10px' }} width={50} src={sessionStorage.getItem('header')} />
@@ -344,20 +392,38 @@ export default function Message() {
                         <p>ID:#1234</p>
                       </div>
                     </div>
-                    <div style={{margin:'20px 0 10px'}}>
+                    <div style={{ margin: '20px 0 10px' }}>
                       菩提本无树，明镜亦非台
                     </div>
                     <div>
-                      <div style={{background:'#FBFBFD',display:'inline-block',padding:'0 5px',borderRadius:'10px'}}>
-                        <img width={20} src='/female.svg'/>
+                      <div style={{ background: '#FBFBFD', display: 'inline-block', padding: '0 5px', borderRadius: '10px' }}>
+                        <img width={20} src='/female.svg' />
                       </div>
-                      <div style={{background:'#FBFBFD',display:'inline-block',padding:'0 10px',borderRadius:'10px',marginLeft:'10px'}}>
+                      <div style={{ background: '#FBFBFD', display: 'inline-block', padding: '0 10px', borderRadius: '10px', marginLeft: '10px' }}>
                         1992-03
                       </div>
-                      <div style={{background:'#FBFBFD',display:'inline-block',padding:'0 10px',borderRadius:'10px',marginLeft:'10px'}}>
+                      <div style={{ background: '#FBFBFD', display: 'inline-block', padding: '0 10px', borderRadius: '10px', marginLeft: '10px' }}>
                         清华大学
                       </div>
                     </div>
+                  </div>
+                  <div className='msg_flex msg-justify-center' style={{ padding: '10px', fontSize: '16px' }}>
+                    <div style={{ marginRight: '10px' }}>
+                      <div>通讯录</div>
+                    </div>
+                   
+                  </div>
+                  <div>
+                      {
+                        userList.map(item=><div className='userlist'>
+                          <img style={{width:'40px',borderRadius:'40px',marginRight:'10px'}} src={item.avatar}/>
+                          <span>{item.username}</span>
+                        </div>)
+                      }
+                      
+                    </div>
+                  <div>
+
                   </div>
                 </div>
               </div>

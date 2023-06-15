@@ -9,6 +9,7 @@ export default {
     "@umijs/plugins/dist/qiankun",
     "@umijs/plugins/dist/model",
   ],
+  scripts: [`/wasm_exec.js`],
   // 启用本地化配置
   locale: {
     default: 'zh-CN',
@@ -24,6 +25,7 @@ export default {
   routes: [
     { path: '/', component: '@/pages/Message' },
   ],
+  // https: {},
   // proxy: {
   //   '/api': {
   //     'target': 'https://movie.jdd001.top',
