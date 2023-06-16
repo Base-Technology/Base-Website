@@ -193,7 +193,7 @@ const Message=(props:any)=> {
 
   }, [token]);
   useEffect(() => {
-    localStorage.setItem('chatgptData', JSON.stringify(messageList));
+  current==0&&  localStorage.setItem('chatgptData', JSON.stringify(messageList));
     if (bottomRef.current) {
       const container = bottomRef.current;
       container.scrollTop = container.scrollHeight;
@@ -246,7 +246,12 @@ const Message=(props:any)=> {
               </div>
             </div> */}
            
-            <MessageList value='none' onSelect={(v) => {setCurrent(v) }}>
+            <MessageList value='none' onSelect={(v:any) => {setCurrent(v);
+             const chatgptData = v==0&& getFromLocalStorage('chatgptData')||[];
+             if (chatgptData) {
+               setMessageList(chatgptData);
+             }
+            }}>
               {
                 list.map((item, index) =>
 
