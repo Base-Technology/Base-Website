@@ -7,6 +7,7 @@ import { Outlet } from 'umi';
 import { UserProvider } from "./UserProvider";
 import { SettingOutlined } from "@ant-design/icons";
 import LogoBlue from '@/assets/logoblue.svg'
+
 function getLibrary(provider: any) {
   const library = new Web3Provider(provider)
   library.pollingInterval = 8000

@@ -25,7 +25,7 @@ export default {
   routes: [
     { path: '/', component: '@/pages/Message' },
   ],
-  // https: {},
+  https: {},
   // proxy: {
   //   '/api': {
   //     'target': 'https://movie.jdd001.top',

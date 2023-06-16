@@ -1,6 +1,6 @@
 import React, { useState, useEffect,useContext } from 'react'
 import { Modal, Input, Button, Form, Select, DatePicker, Row, Col } from 'antd';
-import { Upload } from 'antd';
+import { connect } from 'umi';
 import ImgCrop from 'antd-img-crop';
 import { EllipsisOutlined } from '@ant-design/icons';
 import cbridge from '../assets/cbridge.png'
@@ -35,7 +35,8 @@ const Countdown = ({ seconds, onFinish }: any) => {
 
   return <div>{counter}s后重新发送</div>;
 };
-export default function Header() {
+ const Header=(props:any)=> {
+  const {dispatch}=props;
   const { updateData } = useContext(UserContext)!;
   const [dark, setDark] = useState(true);
   const [visible, setVisible] = useState(false);
@@ -97,6 +98,10 @@ export default function Header() {
     // console.log('首页',response);
     if (response.code == "0") {
       sessionStorage.setItem('header',response.avatar)
+      dispatch({
+        type: 'user/queryUser',
+        payload:response
+      });
     }
     else {
       setVisible(true);
@@ -283,3 +288,7 @@ export default function Header() {
     </>
   )
 }
+
+export default connect(({ user }:any) => ({
+  user,
+}))(Header)

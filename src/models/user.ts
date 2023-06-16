@@ -2,7 +2,6 @@
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export default {
-  namespace: 'count',
   state: {
     num: 100,
     user: {},
@@ -20,6 +19,7 @@ export default {
   },
   effects: {
     *queryUser({ payload }: any, { call, put }: any) {
+      debugger;
       // const { data } = yield call(queryUser, payload);
       yield put({ type: 'queryUserSuccess', payload });
     },

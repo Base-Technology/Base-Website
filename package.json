@@ -24,7 +24,7 @@
     "dayjs": "^1.11.8",
     "ethers": "^5.7.1",
     "millify": "^5.0.1",
-    "open-im-sdk": "^2.3.0-beta.2",
+    "open-im-sdk": "^2.2.0",
     "open-im-sdk-wasm": "^0.1.1",
     "umi": "^4.0.70"
   },

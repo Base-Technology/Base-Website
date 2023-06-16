@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useContext } from 'react'
 import { Button, Card, InputNumber, Input, Divider, Switch, Drawer } from 'antd';
 import { Menu, Space } from 'antd';
+import { connect } from 'umi';
 import { EditOutlined, SettingOutlined, TeamOutlined, PlusOutlined, ArrowLeftOutlined, MessageOutlined, UnlockOutlined, SearchOutlined, CloseOutlined, SwapOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
@@ -33,7 +34,8 @@ const DATA = [
     header: 'https://bf.jdd001.top/cryptologos/zy.png'
   }
 ];
-export default function Message() {
+const Message=(props:any)=> {
+  const {user}=props;
   const { token } = useContext(UserContext)!;
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef(null);
@@ -116,8 +118,8 @@ export default function Message() {
 
     }
     getList();
-    // const openIM = new OpenIMSDK();
-    const openIM = getSDK()
+    const openIM = new OpenIMSDK();
+    // const openIM = getSDK()
 
     const wallet = new ethers.Wallet("0x012540cd5fc11e09978c77885f1a434f24b6e9230c2b7b5b5e117ec473404762");
     const address = wallet.address;
@@ -125,45 +127,60 @@ export default function Message() {
     });
     const config = {
       userID: "78",
-      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzgsImV4cCI6MjAwMjE4MTE0MywiaWF0IjoxNjg2ODIxMTQzfQ.7ffLVawZXACYII_4p9adl4M4QCjYkJQDAbymC0f4P_o",
-      apiAddress: "http://121.5.182.23:10002",
-      wsAddress: "ws://121.5.182.23:10001",
+      token: sessionStorage.getItem('token')||'',
+      // apiAddress: "https://base.jdd001.top:9203",
+      // wsAddress: "wss://base.jdd001.top:9202",
       platformID: 5,
       // apiAddress: "http://119.45.212.83:10002",
-      // url: "ws://119.45.212.83:9204",                          // 平台号
+      url:"wss://base.jdd001.top:9202",                          // 平台号
 
     };
 
     openIM.login(config).then(async res => {
-      console.log("login suc...",res);
-      // openIM.getSelfUserInfo().then(res => {
-      //   debugger
-      //   // 101:登录成功 102:登陆中 103:登录失败 201:登出
+      console.log("login suc...", res);
+      // openIM.logout().then(res => {
+      //   console.log("logout suc...");
       // }).catch(err => {
-      //   debugger
+      //   console.log("logout failed...");
       // })
-      debugger
+      openIM.getSelfUserInfo().then(res => {
+        debugger
+        // 101:登录成功 102:登陆中 103:登录失败 201:登出
+      }).catch(err => {
+        debugger
+      })
+      // debugger
       // operationID
       // openIM.getLoginUser().then(res => {
       //   debugger;
       //   // 当前登录用户ID
       // }).catch(err => {
-      
+
+      // })+
+      // // 创建文本消息
+      // const newTextMsg = await openIM.createTextMessage("abc")
+      // console.log('消息体1', newTextMsg);
+      // const textStr = "abc";
+      // openIM.createTextMessage(textStr).then((res) => {
+      //   console.log('消息体2', res);
+      // }).catch(err => {
+
       // })
-      const newTextMsg = await openIM.createTextMessage("abc")
-      const options = {
-        recvID: "",
-        groupID: "3611454841",
-        message: newTextMsg.data,
-      };
-      openIM.sendMessageNotOss(options).then(({ data,errCode })=>{
-        debugger;
-      }).catch(err=>{
-        debugger
-      })
+      // const options = {
+      //   recvID: "",
+      //   groupID: "3611454841",
+      //   message: newTextMsg.data,
+      // };
+      // // 发送消息
+      // openIM.sendMessageNotOss(options).then(({ data, errCode }) => {
+      //   debugger;
+      // }).catch(err => {
+      //   debugger
+      // })
     }).catch(err => {
-      console.log("login failed...");
+      console.log("login failed...",err);
     })
+    
   }, [token]);
   useEffect(() => {
 
@@ -180,6 +197,7 @@ export default function Message() {
       container.scrollTop = container.scrollHeight;
     }
   }, [messageList.length]);
+  useEffect(()=>console.log('user',user))
   //  获取chatgpt次数
   const getLimit = () => {
     get('/api/v1/chat/chatgpt_limit').then((response: any) => {
@@ -200,7 +218,8 @@ export default function Message() {
             name: response.data[0].school,
             type: 2,
             content: '...',
-            members: response.data.length
+            members: response.data.length,
+            header:response.data[0].school=='清华大学'&&'/qinghua.jpg'||''
           }];
         });
         setUserList(response.data);
@@ -217,23 +236,15 @@ export default function Message() {
             </div>
             {/* <div ><TeamOutlined />&nbsp;<EditOutlined onClick={() => setAction(0)} /></div> */}
           </div>
-          <div className='msg_list'>
-            <div className='msg_flex msg_flex_between msg_bg_subtle_hover' style={{ padding: '10px 18px', alignItems: 'center' }}>
+          <div className='msg_list msg_flex msg_flex_col msg_flex_between'>
+            {/* <div className='msg_flex msg_flex_between msg_bg_subtle_hover' style={{ padding: '10px 18px', alignItems: 'center' }}>
               <div>
                 <img style={{ borderRadius: '40px', marginRight: '10px' }} width={40} src='/icon_contact.svg' />
                 <span style={{ fontSize: '16px' }}>通讯录</span>
               </div>
-            </div>
-            <div className='msg_flex msg_flex_between msg_bg_subtle_hover' style={{ padding: '10px 18px', alignItems: 'center' }}>
-              <div>
-                <img style={{ borderRadius: '40px', marginRight: '10px' }} width={40} src={sessionStorage.getItem('header')} />
-                <span style={{ fontSize: '16px' }}>Doctor</span>
-              </div>
-              <div>
-                <img width={25} src="/icon_settings.svg" />
-              </div>
-            </div>
-            <MessageList value='none' onSelect={() => { }}>
+            </div> */}
+           
+            <MessageList value='none' onSelect={(v) => {setCurrent(v) }}>
               {
                 list.map((item, index) =>
 
@@ -243,82 +254,18 @@ export default function Message() {
               }
             </MessageList>
 
-            <p><br /></p>
+            <div className='msg_flex msg_flex_between msg_bg_subtle_hover' style={{ padding: '10px 18px', alignItems: 'center' }}>
+              <div>
+                <img style={{ borderRadius: '40px', marginRight: '10px' }} width={40} src={user.user.avatar} />
+                <span style={{ fontSize: '16px' }}>{user.user.username}</span>
+              </div>
+              <div>
+                <img width={25} src="/icon_settings.svg" />
+              </div>
+            </div>
           </div>
         </div>
         <div className='msgdetails msg-w-full msg_flex msg_flex_col'>
-          {/* 新建聊天 */}
-          {
-            action == 0 && <>
-              <div className='header msg_flex msg_flex_between msg_items_center msg_border_b'>
-                <div onClick={() => setAction(1)}><ArrowLeftOutlined />&nbsp;&nbsp;&nbsp;&nbsp;Send Message</div>
-              </div>
-              {/* <div className='tokenwrap'> */}
-              <div className='msg-max-w-sm tokenwrap'>
-                {/* <h1 className='msg-mt-8 msg-mb-4'>Create thread</h1> */}
-                <p style={{ marginTop: '15px' }}>Select Target Chain</p>
-                <div className='chainselect flex flex-between flex-align-center'
-                  onClick={() => setOpenChain(true)}>
-                  <div>
-                    <img style={{ width: '30px', marginRight: '20px' }} src={chainList[currentChain].icon} />
-                    <span>{chainList[currentChain].symbol}</span>
-                  </div>
-                  <SwapOutlined />
-                </div>
-                <p>Enter Recipient Address</p>
-                <Input style={{ color: 'white', background: '#040000', height: '50px', border: '1px solid var(--bordercolor)' }} />
-                {/* <p className='mst-opacity-50 msg-font-base'>Link twitter twitter.cardinal.so and domain naming.bonfida.org</p> */}
-                <Divider className='mst-opacity-50' style={{ background: '#ffffff' }} />
-                <div className='msg_flex msg_flex_between msg_bg_subtle_night msg-py-3 msg-px-4 msg-rounded-2xl'>
-                  <span><MessageOutlined />&nbsp;&nbsp;Off-chain</span>
-                  <Switch />
-
-                </div>
-                <br />
-                <div className='msg_flex msg_flex_between msg_bg_subtle_night msg-py-3 msg-px-4 msg-rounded-2xl'>
-                  <span><UnlockOutlined />&nbsp;&nbsp;Unencrypted</span>
-                  <Switch />
-
-                </div>
-                <br />
-                {/* </div> */}
-                <Drawer
-                  bodyStyle={{
-                    background: 'var(--selectbg)'
-                  }}
-                  headerStyle={{ display: 'none' }}
-                  width="100%"
-                  height="100%"
-                  title="Basic Drawer"
-                  placement="bottom"
-                  getContainer={false}
-                  open={openChain}
-                  mask={false}
-                >
-                  <div className='flex flex-between'>
-                    <span>Select Target Chain</span>
-                    <CloseOutlined onClick={() => setOpenChain(false)} />
-                  </div>
-                  <div className='tokenlist'>
-                    {
-                      chainList.map((item, index) => <div
-                        className='item'
-                        onClick={() => { setCurrentChain(index); setOpenChain(false); }}
-                      >
-                        <div>
-                          <img src={item.icon} style={{ marginRight: '15px' }} />
-                          <p>{item.symbol}</p>
-                        </div>
-                      </div>)
-                    }
-                  </div>
-                </Drawer>
-              </div>
-
-              <Button style={{ width: '384px', margin: '20px auto' }} type='primary' size='large' className='cardButton'>Send Message</Button>
-
-            </>
-          }
           {/* 聊天记录 */}
           {
             action == 1 && <>
@@ -347,7 +294,7 @@ export default function Message() {
                 </div>
               </div>
               <div className='msg_flex msg_flex_between' style={{ flex: 1, height: '100%' }}>
-                <div className='' style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: 'calc(100% - 60px)' }}>
+                <div className='' style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 60px)' }}>
                   <div className='detail_list msg_flex msg-flex-col' ref={bottomRef}>
 
                     {messageList.map(item => <DetailItem data={item.content} self={!item.self} datetime={item.datetime} />)}
@@ -382,13 +329,13 @@ export default function Message() {
                   </div>
                 </div>
                 {/* info */}
-                <div style={{ minWidth: '460px',width: '460px', background: '#F5F5F5' }}>
+                <div style={{ minWidth: '460px', width: '460px', background: '#F5F5F5' }}>
                   <div style={{ width: '100%', minHeight: '150px', background: 'rgb(224, 224, 224)', padding: '20px' }}>
                     <div className='msg_flex'>
-                      <img style={{ borderRadius: '40px', marginRight: '10px' }} width={50} src={sessionStorage.getItem('header')} />
+                      <img style={{ borderRadius: '40px', marginRight: '10px' }} width={50} src={list[current].header} />
 
                       <div>
-                        <p>Doctor</p>
+                        <p>{list[current].name}</p>
                         <p>ID:#1234</p>
                       </div>
                     </div>
@@ -407,21 +354,15 @@ export default function Message() {
                       </div>
                     </div>
                   </div>
-                  <div className='msg_flex msg-justify-center' style={{ padding: '10px', fontSize: '16px' }}>
-                    <div style={{ marginRight: '10px' }}>
-                      <div>通讯录</div>
-                    </div>
-                   
-                  </div>
                   <div>
-                      {
-                        userList.map(item=><div className='userlist'>
-                          <img style={{width:'40px',borderRadius:'40px',marginRight:'10px'}} src={item.avatar}/>
-                          <span>{item.username}</span>
-                        </div>)
-                      }
-                      
-                    </div>
+                    {
+                      userList.map(item => <div className='userlist'>
+                        <img style={{ width: '40px', borderRadius: '40px', marginRight: '10px' }} src={item.avatar} />
+                        <span>{item.username}</span>
+                      </div>)
+                    }
+
+                  </div>
                   <div>
 
                   </div>
@@ -437,3 +378,8 @@ export default function Message() {
     </div>
   )
 }
+
+export default connect(({ user }:any) => ({
+  user,
+}))(Message)
+
