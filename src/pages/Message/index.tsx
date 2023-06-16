@@ -261,9 +261,9 @@ const Message=(props:any)=> {
                 <img style={{ borderRadius: '40px', marginRight: '10px' }} width={40} src={user.user.avatar} />
                 <span style={{ fontSize: '16px' }}>{user.user.username}</span>
               </div>
-              <div>
+              {/* <div>
                 <img width={25} src="/icon_settings.svg" />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
