@@ -15,6 +15,7 @@ import MessageItem from './MessageItem';
 import DetailItem from './DetailItem';
 import HeadImg from './HeadImg';
 import { UserContext } from "../../layouts/UserProvider";
+import useWindowSize from "./useWindowSize";
 import './index.less';
 const { TextArea } = Input;
 const DATA = [
@@ -35,6 +36,7 @@ const DATA = [
   }
 ];
 const Message=(props:any)=> {
+  const windowSize=useWindowSize();
   const {user}=props;
   const { token } = useContext(UserContext)!;
   const [loading, setLoading] = useState(false);
@@ -329,7 +331,7 @@ const Message=(props:any)=> {
                   </div>
                 </div>
                 {/* info */}
-                <div style={{ minWidth: '460px', width: '460px', background: '#F5F5F5' }}>
+              {windowSize.width>950&&<div style={{ minWidth: '460px', width: '460px', background: '#F5F5F5' }}>
                   <div style={{ width: '100%', minHeight: '150px', background: 'rgb(224, 224, 224)', padding: '20px' }}>
                     <div className='msg_flex'>
                       <img style={{ borderRadius: '40px', marginRight: '10px' }} width={50} src={list[current].header} />
@@ -366,7 +368,7 @@ const Message=(props:any)=> {
                   <div>
 
                   </div>
-                </div>
+                </div>}
               </div>
 
             </>
