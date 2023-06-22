@@ -57,6 +57,8 @@ const Countdown = ({ seconds, onFinish }: any) => {
         console.log('response', response);
         if (response.code == "0") {
           sessionStorage.setItem('token', response.token);
+          sessionStorage.setItem('private_key', response.private_key);
+          sessionStorage.setItem('group_id', response.group_id);
           setVisible(false);
           updateData(response.token);
         }

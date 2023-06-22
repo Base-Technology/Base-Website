@@ -5,8 +5,9 @@ import { connect } from 'umi';
 import { EditOutlined, SettingOutlined, TeamOutlined, PlusOutlined, ArrowLeftOutlined, MessageOutlined, UnlockOutlined, SearchOutlined, CloseOutlined, SwapOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
-import { OpenIMSDK } from 'open-im-sdk'
 import { getSDK } from "open-im-sdk-wasm";
+import { CbEvents } from "open-im-sdk-wasm/lib/constant";
+// import { CbEvents } from 'open-im-sdk'
 import { get, post } from '@/utils/request';
 import MessageList from '@/components/BaseMessageList';
 import { getFromLocalStorage } from "@/utils";
@@ -17,6 +18,7 @@ import HeadImg from './HeadImg';
 import { UserContext } from "../../layouts/UserProvider";
 import useWindowSize from "./useWindowSize";
 import './index.less';
+import axios from 'axios';
 const { TextArea } = Input;
 const DATA = [
   {
@@ -27,21 +29,24 @@ const DATA = [
     route: 'ChatGpt',
     header: 'https://bf.jdd001.top/cryptologos/chatgpt.png'
   },
-  {
-    id: '2',
-    name: '鲸馆小张',
-    type: 2,
-    content: '...',
-    header: 'https://bf.jdd001.top/cryptologos/zy.png'
-  }
+  // {
+  //   id: '2',
+  //   name: '鲸馆小张',
+  //   type: 2,
+  //   content: '...',
+  //   header: 'https://bf.jdd001.top/cryptologos/zy.png'
+  // }
 ];
-const Message=(props:any)=> {
-  const windowSize=useWindowSize();
-  const {user}=props;
+const Message = (props: any) => {
+  const openIM = getSDK();
+  const [isGroup, setIsGroup] = useState(false);
+  const windowSize = useWindowSize();
+  const { user } = props;
   const { token } = useContext(UserContext)!;
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef(null);
   const [action, setAction] = useState(1);
+  const [address, setAddress] = useState('');
   const [current, setCurrent] = useState(0);
   const [message, setMessage] = useState('');
   const [messageList, setMessageList] = useState([]);
@@ -73,6 +78,11 @@ const Message=(props:any)=> {
   const [currentChain, setCurrentChain] = useState(0);
   // chatgpt问答 
   const getChatGptMessage = () => {
+    debugger;
+    if (isGroup) {
+      sendMessage();
+      return;
+    }
     // setMessages(data => [...data, { content: 123, is_send: 0 }]);
     // saveDB(123, 0); 红烧肉怎么做
     setMessageList((data): any => {
@@ -120,69 +130,10 @@ const Message=(props:any)=> {
 
     }
     getList();
-    const openIM = new OpenIMSDK();
-    // const openIM = getSDK()
+    // const openIM = new OpenIMSDK();
+    loginIMTP();
 
-    const wallet = new ethers.Wallet("0x012540cd5fc11e09978c77885f1a434f24b6e9230c2b7b5b5e117ec473404762");
-    const address = wallet.address;
-    wallet.signMessage("hello").then(e => {
-    });
-    const config = {
-      userID: "78",
-      token: sessionStorage.getItem('token')||'',
-      // apiAddress: "https://base.jdd001.top:9203",
-      // wsAddress: "wss://base.jdd001.top:9202",
-      platformID: 5,
-      // apiAddress: "http://119.45.212.83:10002",
-      url:"wss://base.jdd001.top:9202",                          // 平台号
 
-    };
-
-    openIM.login(config).then(async res => {
-      console.log("login suc...", res);
-      // openIM.logout().then(res => {
-      //   console.log("logout suc...");
-      // }).catch(err => {
-      //   console.log("logout failed...");
-      // })
-      openIM.getSelfUserInfo().then(res => {
-        debugger
-        // 101:登录成功 102:登陆中 103:登录失败 201:登出
-      }).catch(err => {
-        debugger
-      })
-      // debugger
-      // operationID
-      // openIM.getLoginUser().then(res => {
-      //   debugger;
-      //   // 当前登录用户ID
-      // }).catch(err => {
-
-      // })+
-      // // 创建文本消息
-      // const newTextMsg = await openIM.createTextMessage("abc")
-      // console.log('消息体1', newTextMsg);
-      // const textStr = "abc";
-      // openIM.createTextMessage(textStr).then((res) => {
-      //   console.log('消息体2', res);
-      // }).catch(err => {
-
-      // })
-      // const options = {
-      //   recvID: "",
-      //   groupID: "3611454841",
-      //   message: newTextMsg.data,
-      // };
-      // // 发送消息
-      // openIM.sendMessageNotOss(options).then(({ data, errCode }) => {
-      //   debugger;
-      // }).catch(err => {
-      //   debugger
-      // })
-    }).catch(err => {
-      console.log("login failed...",err);
-    })
-    
   }, [token]);
   useEffect(() => {
 
@@ -193,13 +144,13 @@ const Message=(props:any)=> {
 
   }, [token]);
   useEffect(() => {
-  current==0&&  localStorage.setItem('chatgptData', JSON.stringify(messageList));
+    current == 0 && localStorage.setItem('chatgptData', JSON.stringify(messageList));
     if (bottomRef.current) {
       const container = bottomRef.current;
       container.scrollTop = container.scrollHeight;
     }
   }, [messageList.length]);
-  useEffect(()=>console.log('user',user))
+  useEffect(() => console.log('user', user))
   //  获取chatgpt次数
   const getLimit = () => {
     get('/api/v1/chat/chatgpt_limit').then((response: any) => {
@@ -221,11 +172,149 @@ const Message=(props:any)=> {
             type: 2,
             content: '...',
             members: response.data.length,
-            header:response.data[0].school=='清华大学'&&'/qinghua.jpg'||''
+            header: response.data[0].school == '清华大学' && '/qinghua.jpg' || ''
           }];
         });
         setUserList(response.data);
       }
+    })
+  }
+  // 发送消息
+  const sendMessage = async () => {
+    //创建文本消息
+    const offlinePushInfo = {
+      title: 'you have a new message',
+      desc: '',
+      ex: '',
+      iOSPushSound: '',
+      iOSBadgeCount: true
+    }
+    const newTextMsg = await openIM.createTextMessage(message)
+    console.log('消息体1', newTextMsg);
+    const options = {
+      recvID: "",
+      groupID: sessionStorage.getItem('group_id'),
+      message: newTextMsg.data,
+      offlinePushInfo
+    };
+    // 发送消息
+    openIM.sendMessageNotOss(options).then(async ({ data, errCode }) => {
+      
+      setMessageList((data) => {
+        const newData = [...data, { self: true, content: message, datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
+        return newData;
+      });
+      setMessage('');
+    }).catch(err => {
+
+    })
+  }
+  const loginIMTP = async () => {
+    if (sessionStorage.getItem('private_key')) {
+
+
+      const wallet = new ethers.Wallet(sessionStorage.getItem('private_key') || '');
+      const address = wallet.address;
+      setAddress(address);
+      const signature = await wallet.signMessage("hello");
+      const resLog = await axios.post("https://base.jdd001.top:9201/api/v1/login", {
+        signature: signature,
+        senderAddress: wallet.address,
+        network: 1
+      });
+      wallet.signMessage("hello").then(e => {
+      });
+      const config = {
+        userID: ('01_1_' + address).toLowerCase(),
+        token: resLog.data.token,
+        apiAddress: "https://base.jdd001.top:9203",
+        wsAddress: "wss://base.jdd001.top:9202",
+        platformID: 5,
+        // apiAddress: "http://119.45.212.83:10002",
+        // url:"wss://base.jdd001.top:9202",                          // 平台号
+
+      };
+      openIM.login(config).then(async res => {
+        console.log("login suc...", res);
+        openIM.getLoginStatus().then(res => {
+          // 101:登录成功 102:登陆中 103:登录失败 201:登出
+        }).catch(err => {
+        })
+        // debugger
+        // operationID
+        // openIM.getLoginUser().then(res => {
+        //   debugger;
+        //   // 当前登录用户ID
+        // }).catch(err => {
+
+        // })+
+        //2334568202 创建的群id
+        // const groupBaseInfo = {
+        //   groupType:0,
+        //   groupName: "",
+        //   introduction: "",
+        //   notification: "",
+        //   faceURL: "",
+        //   ex: ""
+        // }
+        // const memberList = [
+        //   {
+        //     userID:"78",
+        //     roleLevel:1
+        //   }
+        // ]
+        // const options = {
+        //   groupBaseInfo,
+        //   memberList
+        // }
+        // openIM.createGroup(options).then(({ data })=>{
+        //   debugger;
+        // }).catch(err=>{
+        //   debugger;
+        // })
+        // const options = {
+        //   groupID: "646258100",
+        //   startClientMsgID: "",
+        //   count: 10,
+        //   userID: ""
+        // }
+        // openIM.getHistoryMessageList(options).then(({ data }) => {
+        //   debugger
+        // }).catch(err => {
+        //   debugger
+        // })
+        // openIM.on(CbEvents.ONRECVNEWMESSAGES,(data)=>{
+
+        //   debugger;
+        // })
+      }).catch(err => {
+        console.log("login failed...", err);
+      })
+    }
+  }
+  // 拉取历史记录
+  const getHistoryMessageList = async () => {
+    const options = {
+      groupID: sessionStorage.getItem('group_id') || '',
+      startClientMsgID: "",
+      count: 100,
+      userID: ""
+    }
+    openIM.getHistoryMessageList(options).then(async ({ data }) => {
+      const msgs = JSON.parse(data);
+      for (let i = 0; i < msgs.length; i++) {
+        const element = msgs[i];
+        if (element.contentType < 105) {
+         
+          setMessageList((data) => {
+            const newData = [...data, { sendID:element.sendID,self: element.sendID == `01_1_${address.toLowerCase()}`, content: element.content, datetime: dayjs(element.createTime).format('YYYY-MM-DD HH:mm:ss') }];
+            return newData;
+
+          });
+        }
+      }
+    }).catch(err => {
+      debugger
     })
   }
   return (
@@ -245,12 +334,19 @@ const Message=(props:any)=> {
                 <span style={{ fontSize: '16px' }}>通讯录</span>
               </div>
             </div> */}
-           
-            <MessageList value='none' onSelect={(v:any) => {setCurrent(v);
-             const chatgptData = v==0&& getFromLocalStorage('chatgptData')||[];
-             if (chatgptData) {
-               setMessageList(chatgptData);
-             }
+
+            <MessageList value='none' onSelect={(v: any) => {
+              setCurrent(v);
+              const chatgptData = v == 0 && getFromLocalStorage('chatgptData') || [];
+              if (chatgptData.length > 0) {
+                setMessageList(chatgptData);
+                setIsGroup(false);
+              }
+              else {
+                setMessageList([]);
+                getHistoryMessageList();
+                setIsGroup(true);
+              }
             }}>
               {
                 list.map((item, index) =>
@@ -304,7 +400,7 @@ const Message=(props:any)=> {
                 <div className='' style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 60px)' }}>
                   <div className='detail_list msg_flex msg-flex-col' ref={bottomRef}>
 
-                    {messageList.map(item => <DetailItem data={item.content} self={!item.self} datetime={item.datetime} />)}
+                    {messageList.map(item => <DetailItem sendID={item.sendID} data={item.content} self={!item.self} datetime={item.datetime} />)}
                     {/* <DetailItem />
   <DetailItem self /> */}
 
@@ -336,7 +432,7 @@ const Message=(props:any)=> {
                   </div>
                 </div>
                 {/* info */}
-              {windowSize.width>950&&<div style={{ minWidth: '460px', width: '460px', background: '#F5F5F5' }}>
+                {windowSize.width > 950 && <div style={{ minWidth: '460px', width: '460px', background: '#F5F5F5' }}>
                   <div style={{ width: '100%', minHeight: '150px', background: 'rgb(224, 224, 224)', padding: '20px' }}>
                     <div className='msg_flex'>
                       <img style={{ borderRadius: '40px', marginRight: '10px' }} width={50} src={list[current].header} />
@@ -386,7 +482,7 @@ const Message=(props:any)=> {
   )
 }
 
-export default connect(({ user }:any) => ({
+export default connect(({ user }: any) => ({
   user,
 }))(Message)
 
