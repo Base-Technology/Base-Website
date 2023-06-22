@@ -86,7 +86,7 @@ const Message = (props: any) => {
     // setMessages(data => [...data, { content: 123, is_send: 0 }]);
     // saveDB(123, 0); 红烧肉怎么做
     setMessageList((data): any => {
-      const newData = [...data, { self: true, content: message, datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
+      const newData = [...data, {type:'chatgpt', self: true, content: message, datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
       return newData;
     });
     setMessage('');
@@ -99,7 +99,7 @@ const Message = (props: any) => {
         getLimit();
         // 保存到数据库
         setMessageList(data => {
-          const newData = [...data, { self: false, content: response.response, datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
+          const newData = [...data, {type:'chatgpt', self: false, content: response.response, datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
           return newData;
 
         });
@@ -108,7 +108,7 @@ const Message = (props: any) => {
       else {
         // 保存到数据库
         setMessageList(data => {
-          const newData = [...data, { self: false, content: "请重试一次", datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
+          const newData = [...data, {type:'chatgpt', self: false, content: "请重试一次", datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
           return newData;
 
         });
@@ -144,7 +144,9 @@ const Message = (props: any) => {
 
   }, [token]);
   useEffect(() => {
-    current == 0 && localStorage.setItem('chatgptData', JSON.stringify(messageList));
+    if (current == 0) {
+      localStorage.setItem('chatgptData', JSON.stringify(messageList.filter(item=>item.type=="chatgpt")));
+    }
     if (bottomRef.current) {
       const container = bottomRef.current;
       container.scrollTop = container.scrollHeight;
@@ -199,7 +201,7 @@ const Message = (props: any) => {
     };
     // 发送消息
     openIM.sendMessageNotOss(options).then(async ({ data, errCode }) => {
-      
+
       setMessageList((data) => {
         const newData = [...data, { self: true, content: message, datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
         return newData;
@@ -283,10 +285,10 @@ const Message = (props: any) => {
         // }).catch(err => {
         //   debugger
         // })
-        // openIM.on(CbEvents.ONRECVNEWMESSAGES,(data)=>{
+        openIM.on(CbEvents.ONRECVNEWMESSAGES, (data) => {
 
-        //   debugger;
-        // })
+          debugger;
+        })
       }).catch(err => {
         console.log("login failed...", err);
       })
@@ -305,9 +307,9 @@ const Message = (props: any) => {
       for (let i = 0; i < msgs.length; i++) {
         const element = msgs[i];
         if (element.contentType < 105) {
-         
+
           setMessageList((data) => {
-            const newData = [...data, { sendID:element.sendID,self: element.sendID == `01_1_${address.toLowerCase()}`, content: element.content, datetime: dayjs(element.createTime).format('YYYY-MM-DD HH:mm:ss') }];
+            const newData = [...data, { sendID: element.sendID, self: element.sendID == `01_1_${address.toLowerCase()}`, content: element.content, datetime: dayjs(element.createTime).format('YYYY-MM-DD HH:mm:ss') }];
             return newData;
 
           });
@@ -328,35 +330,39 @@ const Message = (props: any) => {
             {/* <div ><TeamOutlined />&nbsp;<EditOutlined onClick={() => setAction(0)} /></div> */}
           </div>
           <div className='msg_list msg_flex msg_flex_col msg_flex_between'>
-            {/* <div className='msg_flex msg_flex_between msg_bg_subtle_hover' style={{ padding: '10px 18px', alignItems: 'center' }}>
-              <div>
-                <img style={{ borderRadius: '40px', marginRight: '10px' }} width={40} src='/icon_contact.svg' />
-                <span style={{ fontSize: '16px' }}>通讯录</span>
+
+            <div>
+              <div className='msg_flex msg_flex_between msg_bg_subtle_hover' style={{ padding: '10px 18px', alignItems: 'center' }}>
+                <div>
+                  <img style={{ borderRadius: '40px', marginRight: '10px' }} width={40} src='/icon_contact.svg' />
+                  <span style={{ fontSize: '16px' }}>通讯录</span>
+                </div>
               </div>
-            </div> */}
+              <MessageList value='none' onSelect={(v: any) => {
+                setCurrent(v);
+                const chatgptData = v == 0 && getFromLocalStorage('chatgptData') || [];
+                if(v==0) {
+                  setMessageList([]);
+                }
+                if (chatgptData.length > 0) {
+                  setMessageList(() => chatgptData);
+                  setIsGroup(false);
+                }
+                if(v!=0) {
+                  setMessageList([]);
+                  getHistoryMessageList();
+                  setIsGroup(true);
+                }
+              }}>
+                {
+                  list.map((item, index) =>
 
-            <MessageList value='none' onSelect={(v: any) => {
-              setCurrent(v);
-              const chatgptData = v == 0 && getFromLocalStorage('chatgptData') || [];
-              if (chatgptData.length > 0) {
-                setMessageList(chatgptData);
-                setIsGroup(false);
-              }
-              else {
-                setMessageList([]);
-                getHistoryMessageList();
-                setIsGroup(true);
-              }
-            }}>
-              {
-                list.map((item, index) =>
-
-                  <MessageList.Item value={index}>
-                    <MessageItem data={item} />
-                  </MessageList.Item>)
-              }
-            </MessageList>
-
+                    <MessageList.Item value={index}>
+                      <MessageItem data={item} />
+                    </MessageList.Item>)
+                }
+              </MessageList>
+            </div>
             <div className='msg_flex msg_flex_between msg_bg_subtle_hover' style={{ padding: '10px 18px', alignItems: 'center' }}>
               <div>
                 <img style={{ borderRadius: '40px', marginRight: '10px' }} width={40} src={user.user.avatar} />
@@ -400,7 +406,7 @@ const Message = (props: any) => {
                 <div className='' style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 60px)' }}>
                   <div className='detail_list msg_flex msg-flex-col' ref={bottomRef}>
 
-                    {messageList.map(item => <DetailItem sendID={item.sendID} data={item.content} self={!item.self} datetime={item.datetime} />)}
+                    {messageList.map(item => <DetailItem type={item.type} sendID={item.sendID} data={item.content} self={!item.self} datetime={item.datetime} />)}
                     {/* <DetailItem />
   <DetailItem self /> */}
 

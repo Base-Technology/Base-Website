@@ -7,7 +7,7 @@ import { get } from '@/utils/request';
 
 export default function MessageItem(props) {
 
-  const { self, data, datetime, sendID } = props;
+  const { self, data, datetime, sendID,type } = props;
   const [header, setHeader] = useState('');
   const getHeader = async () => {
     const res = await get(`/api/v1/user?imtp_user_id=${sendID}`);
@@ -20,7 +20,7 @@ export default function MessageItem(props) {
   return (
     <div style={{ marginBottom: '10px' }} className={`${self && 'base-hr' || ''}`}>
       <div className={`msg_flex ${!self && 'msg-justify-end'}  msg-ml-10`}>
-        {self&&<div>
+        {self&&type!="chatgpt"&&<div>
           <img style={{width:'40px',borderRadius:'40px',marginRight:'10px'}} src={header} />
         </div>}
         <div className='msg_flex msg-flex-col' style={{ paddingRight: '20px' }}>
