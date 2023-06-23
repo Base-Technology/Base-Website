@@ -86,7 +86,7 @@ const Message = (props: any) => {
     // setMessages(data => [...data, { content: 123, is_send: 0 }]);
     // saveDB(123, 0); 红烧肉怎么做
     setMessageList((data): any => {
-      const newData = [...data, {type:'chatgpt', self: true, content: message, datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
+      const newData = [...data, { type: 'chatgpt', self: true, content: message, datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
       return newData;
     });
     setMessage('');
@@ -99,7 +99,7 @@ const Message = (props: any) => {
         getLimit();
         // 保存到数据库
         setMessageList(data => {
-          const newData = [...data, {type:'chatgpt', self: false, content: response.response, datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
+          const newData = [...data, { type: 'chatgpt', self: false, content: response.response, datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
           return newData;
 
         });
@@ -108,7 +108,7 @@ const Message = (props: any) => {
       else {
         // 保存到数据库
         setMessageList(data => {
-          const newData = [...data, {type:'chatgpt', self: false, content: "请重试一次", datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
+          const newData = [...data, { type: 'chatgpt', self: false, content: "请重试一次", datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
           return newData;
 
         });
@@ -145,14 +145,34 @@ const Message = (props: any) => {
   }, [token]);
   useEffect(() => {
     if (current == 0) {
-      localStorage.setItem('chatgptData', JSON.stringify(messageList.filter(item=>item.type=="chatgpt")));
+      localStorage.setItem('chatgptData', JSON.stringify(messageList.filter(item => item.type == "chatgpt")));
     }
     if (bottomRef.current) {
       const container = bottomRef.current;
       container.scrollTop = container.scrollHeight;
     }
   }, [messageList.length]);
-  useEffect(() => console.log('user', user))
+  useEffect(() => {
+    openIM.on(CbEvents.ONRECVNEWMESSAGES, (data) => {
+
+      if (current != 0) {
+        const msgs = JSON.parse(data.data);
+        for (let i = 0; i < msgs.length; i++) {
+          const element = msgs[i];
+          if (element.contentType < 105) {
+
+            setMessageList((data) => {
+              const newData = [...data, { sendID: element.sendID, self: element.sendID == `01_1_${address.toLowerCase()}`, content: element.content, datetime: dayjs(element.createTime).format('YYYY-MM-DD HH:mm:ss') }];
+              return newData;
+
+            });
+          }
+        }
+      }
+
+    })
+  }, [current])
+
   //  获取chatgpt次数
   const getLimit = () => {
     get('/api/v1/chat/chatgpt_limit').then((response: any) => {
@@ -195,12 +215,12 @@ const Message = (props: any) => {
     console.log('消息体1', newTextMsg);
     const options = {
       recvID: "",
-      groupID: sessionStorage.getItem('group_id'),
+      groupID: sessionStorage.getItem('group_id') || '',
       message: newTextMsg.data,
       offlinePushInfo
     };
     // 发送消息
-    openIM.sendMessageNotOss(options).then(async ({ data, errCode }) => {
+    openIM.sendMessageNotOss(options).then(({ data, errCode }) => {
 
       setMessageList((data) => {
         const newData = [...data, { self: true, content: message, datetime: dayjs().format('YYYY-MM-DD HH:mm:ss') }];
@@ -285,10 +305,7 @@ const Message = (props: any) => {
         // }).catch(err => {
         //   debugger
         // })
-        openIM.on(CbEvents.ONRECVNEWMESSAGES, (data) => {
 
-          debugger;
-        })
       }).catch(err => {
         console.log("login failed...", err);
       })
@@ -319,6 +336,21 @@ const Message = (props: any) => {
       debugger
     })
   }
+
+  const handleKeyDown = (event) => {
+    // 按下回车键（Enter）
+    if (event.key === "Enter") {
+      // 如果同时按下Ctrl键
+      if (event.ctrlKey) {
+        // 执行回车+Ctrl的操作
+        setMessage(v=>v+ "\n")
+      } else {
+        // 执行回车的操作
+        event.preventDefault();
+        getChatGptMessage()
+      }
+    }
+  };
   return (
     <div className='message'>
       <div className='msg_main' >
@@ -339,16 +371,17 @@ const Message = (props: any) => {
                 </div>
               </div>
               <MessageList value='none' onSelect={(v: any) => {
+                debugger;
                 setCurrent(v);
                 const chatgptData = v == 0 && getFromLocalStorage('chatgptData') || [];
-                if(v==0) {
+                if (v == 0) {
                   setMessageList([]);
                 }
                 if (chatgptData.length > 0) {
                   setMessageList(() => chatgptData);
                   setIsGroup(false);
                 }
-                if(v!=0) {
+                if (v != 0) {
                   setMessageList([]);
                   getHistoryMessageList();
                   setIsGroup(true);
@@ -418,7 +451,7 @@ const Message = (props: any) => {
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="说点什么吧"
                         className='baseta'
-
+                        onKeyDown={handleKeyDown}
                       />
                       <div style={{ textAlign: 'right', padding: '10px' }}>
                         {
